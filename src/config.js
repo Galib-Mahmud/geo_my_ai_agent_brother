@@ -11,7 +11,7 @@ export const config = {
   
   openrouter: {
     apiKey: process.env.OPENROUTER_API_KEY || '',
-    model: process.env.OPENROUTER_MODEL || 'nousresearch/hermes-3-llama-3.1-405b:free',
+    model: process.env.OPENROUTER_MODEL || 'openrouter/free',
     baseUrl: 'https://openrouter.ai/api/v1',
   },
 
@@ -34,6 +34,6 @@ export const config = {
 
   // Automation flags
   replyToGroups: process.env.REPLY_TO_GROUPS === 'true',
-  replyToSelf: process.env.REPLY_TO_SELF === 'true',
-  typingDelayMs: parseInt(process.env.TYPING_DELAY_MS || '2000', 10),
+  replyToSelf: process.env.REPLY_TO_SELF !== 'false', // Default true so user can test from their own phone!
+  typingDelayMs: parseInt(process.env.TYPING_DELAY_MS || '1500', 10),
 };
