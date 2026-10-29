@@ -73,6 +73,40 @@ btnGetPairingCode?.addEventListener('click', async () => {
   }
 });
 
+// Update API Key Dynamically
+const inputApiKey = document.getElementById('inputApiKey');
+const btnSaveKey = document.getElementById('btnSaveKey');
+
+btnSaveKey?.addEventListener('click', async () => {
+  const key = inputApiKey.value.trim();
+  if (!key) {
+    alert('Please paste a valid OpenRouter API key');
+    return;
+  }
+  btnSaveKey.disabled = true;
+  btnSaveKey.innerText = 'Applying...';
+  try {
+    const res = await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apiKey: key, model: 'openrouter/free' }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('✅ Key applied successfully! Testing now...');
+      inputApiKey.value = '';
+      updateStatus();
+    } else {
+      alert('Error updating settings: ' + data.error);
+    }
+  } catch (err) {
+    alert('Error: ' + err.message);
+  } finally {
+    btnSaveKey.disabled = false;
+    btnSaveKey.innerText = 'Save & Apply';
+  }
+});
+
 // Format seconds into HH:MM:SS
 function formatUptime(seconds) {
   if (!seconds || seconds <= 0) return '00:00:00';

@@ -60,6 +60,24 @@ export function createServer() {
     }
   });
 
+  // Dynamically update API Key and test connection
+  app.post('/api/settings', async (req, res) => {
+    const { apiKey, model } = req.body;
+    if (apiKey) {
+      const clean = apiKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '').trim();
+      config.openrouter.apiKey = clean;
+    }
+    if (model) {
+      config.openrouter.model = model.trim();
+    }
+    res.json({
+      success: true,
+      message: 'Settings updated successfully!',
+      model: config.openrouter.model,
+      hasKey: Boolean(config.openrouter.apiKey),
+    });
+  });
+
   // Recent activity logs
   app.get('/api/logs', (req, res) => {
     res.json({ logs: recentActivities });
