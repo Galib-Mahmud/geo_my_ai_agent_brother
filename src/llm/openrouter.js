@@ -100,5 +100,6 @@ export async function generateOpenRouterReply(messages) {
     }
   }
 
-  throw new Error(`All OpenRouter free models failed. Last error: ${lastError?.message || 'unknown'}`);
+  const errDetails = JSON.stringify(lastError?.response?.data) || lastError?.message || 'unknown';
+  throw new Error(`All OpenRouter free models failed. Last error: ${errDetails}`);
 }
