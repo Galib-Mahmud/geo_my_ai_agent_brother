@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geo - Personal AI Brother & WhatsApp Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="mesh-bg"></div>
+  
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="logo-orb">
+          <div class="orb-inner"></div>
+        </div>
+        <div>
+          <div class="brand-title-wrap">
+            <h1 class="brand-title">Geo</h1>
+            <span class="badge badge-accent">AI Brother Agent</span>
+          </div>
+          <p class="brand-sub">Autonomous Personal Assistant & WhatsApp Auto-Replier</p>
+        </div>
+      </div>
+
+      <div class="header-status">
+        <div class="status-pill" id="globalStatusPill">
+          <span class="status-dot pulse" id="statusDot"></span>
+          <span class="status-text" id="statusText">Connecting...</span>
+        </div>
+        <button class="btn btn-outline btn-sm" id="btnReconnect" title="Reconnect WhatsApp">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Reconnect
+        </button>
+      </div>
+    </header>
+
+    <!-- Metrics Grid -->
+    <section class="metrics-grid">
+      <div class="metric-card glass">
+        <div class="metric-header">
+          <span class="metric-icon">🧠</span>
+          <span class="metric-label">AI Brain Engine</span>
+        </div>
+        <div class="metric-value" id="valBrain">Hermes 3 / OpenRouter</div>
+        <div class="metric-sub" id="valModel">nousresearch/hermes-3-llama-3.1</div>
+      </div>
+
+      <div class="metric-card glass">
+        <div class="metric-header">
+          <span class="metric-icon">📱</span>
+          <span class="metric-label">WhatsApp Status</span>
+        </div>
+        <div class="metric-value" id="valPhone">Awaiting Link</div>
+        <div class="metric-sub" id="valUser">Owner: Galib Mahmud</div>
+      </div>
+
+      <div class="metric-card glass">
+        <div class="metric-header">
+          <span class="metric-icon">⚡</span>
+          <span class="metric-label">System Uptime</span>
+        </div>
+        <div class="metric-value" id="valUptime">00:00:00</div>
+        <div class="metric-sub">Keep-Alive: 24/7 Active</div>
+      </div>
+    </section>
+
+    <!-- Main Content: Connection & Controls -->
+    <div class="main-grid">
+      <!-- Left Column: WhatsApp Linking Card -->
+      <section class="card glass link-card">
+        <div class="card-header">
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="tab-qr" id="tabBtnQr">QR Code Scan</button>
+            <button class="tab-btn" data-tab="tab-pair" id="tabBtnPair">Phone Pairing Code</button>
+          </div>
+        </div>
+
+        <!-- Tab 1: QR Code -->
+        <div class="tab-pane active" id="tab-qr">
+          <div class="qr-container" id="qrContainer">
+            <div class="qr-box" id="qrBox">
+              <div class="qr-spinner" id="qrSpinner">
+                <div class="spinner"></div>
+                <p>Generating secure WhatsApp session...</p>
+              </div>
+              <img src="" alt="WhatsApp QR Code" id="qrImage" class="qr-image hidden">
+            </div>
+            
+            <div class="connected-state hidden" id="connectedState">
+              <div class="check-orb">✓</div>
+              <h3>WhatsApp Connected & Active!</h3>
+              <p>Geo is now running silently and auto-replying to your incoming chats like a real brother.</p>
+              <div class="connected-badge" id="connectedNumber">+880 17XX-XXXXXX</div>
+            </div>
+
+            <div class="qr-instructions" id="qrInstructions">
+              <ol>
+                <li>Open <strong>WhatsApp</strong> on your phone</li>
+                <li>Tap <strong>Settings</strong> or <strong>Menu (⋮)</strong> &gt; <strong>Linked Devices</strong></li>
+                <li>Tap <strong>Link a Device</strong> and point your camera at this QR code</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Pairing Code -->
+        <div class="tab-pane" id="tab-pair">
+          <div class="pairing-container">
+            <p class="pair-desc">Don't want to use your camera? Link via an 8-digit code directly in WhatsApp!</p>
+            <div class="input-group">
+              <label for="inputPhone">Your WhatsApp Phone Number (with Country Code):</label>
+              <div class="input-row">
+                <input type="text" id="inputPhone" placeholder="e.g. 8801712345678" />
+                <button class="btn btn-primary" id="btnGetPairingCode">Get Code</button>
+              </div>
+              <span class="input-hint">Example: 88017XXXXXXXX (no plus sign or spaces)</span>
+            </div>
+
+            <div class="pairing-result hidden" id="pairingResult">
+              <span class="pair-label">Your WhatsApp 8-Digit Pairing Code:</span>
+              <div class="code-display" id="displayPairingCode">---- ----</div>
+              <p class="pair-instruction">
+                Open WhatsApp on phone &gt; <strong>Linked Devices</strong> &gt; <strong>Link a Device</strong> &gt; <strong>Link with phone number instead</strong> &gt; enter this code.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Interactive Browser Chat with Geo -->
+      <section class="card glass chat-card">
+        <div class="card-header flex-between">
+          <div>
+            <h2 class="card-title">Talk with Geo</h2>
+            <p class="card-sub">Test Geo's persona, humor, and Bangla/English abilities right here</p>
+          </div>
+          <span class="badge badge-subtle">Sandbox</span>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-bubble bubble-agent">
+            <div class="bubble-header">
+              <span class="agent-name">Geo</span>
+              <span class="bubble-time">Now</span>
+            </div>
+            <div class="bubble-body">
+              Hey! I am <strong>Geo</strong>, Galib's AI brother. Amar sathe Bangla, Banglish ba English jekono bhabe kotha bolte paro! How can I help you today?
+            </div>
+          </div>
+        </div>
+
+        <form class="chat-input-bar" id="chatForm">
+          <input type="text" id="chatInput" placeholder="Type a message (Bangla / Banglish / English)..." autocomplete="off" />
+          <button type="submit" class="btn btn-primary" id="btnSendChat">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <!-- Bottom Section: Live Activity Log -->
+    <section class="card glass log-card">
+      <div class="card-header flex-between">
+        <div>
+          <h2 class="card-title">Live Message Stream & Logs</h2>
+          <p class="card-sub">Real-time incoming queries and Geo's smart automated responses</p>
+        </div>
+        <div class="log-actions">
+          <button class="btn btn-outline btn-sm" id="btnClearLogs">Clear</button>
+        </div>
+      </div>
+      <div class="log-stream" id="logStream">
+        <div class="log-empty">Waiting for incoming WhatsApp messages...</div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Geo AI Agent Brother • Built for <a href="https://github.com/Galib-Mahmud/geo_my_ai_agent_brother" target="_blank">Galib Mahmud</a> • 100% Free Stack on Render</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

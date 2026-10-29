@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: geo-ai-agent-brother
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: AGENT_NAME
+        value: Geo
+      - key: OWNER_NAME
+        value: Galib Mahmud
+      - key: LLM_PROVIDER
+        value: openrouter
+      - key: OPENROUTER_MODEL
+        value: nousresearch/hermes-3-llama-3.1-405b:free
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-1.5-flash
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: RENDER_EXTERNAL_URL
+        sync: false
+      - key: REPLY_TO_GROUPS
+        value: false
+      - key: REPLY_TO_SELF
+        value: false
