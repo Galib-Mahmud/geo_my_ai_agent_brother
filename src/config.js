@@ -16,7 +16,10 @@ export const config = {
   
   openrouter: {
     apiKey: cleanKey(process.env.OPENROUTER_API_KEY),
-    model: (process.env.OPENROUTER_MODEL || 'openrouter/free').trim(),
+    model: (() => {
+      const m = (process.env.OPENROUTER_MODEL || 'openrouter/free').trim();
+      return m.includes('405b:free') ? 'openrouter/free' : m;
+    })(),
     baseUrl: 'https://openrouter.ai/api/v1',
   },
 
