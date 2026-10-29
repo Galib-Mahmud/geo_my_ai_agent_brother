@@ -70,6 +70,22 @@ export function createServer() {
     if (model) {
       config.openrouter.model = model.trim();
     }
+
+    // Persist to local disk so restarts retain the key
+    try {
+      import('fs').then(fs => {
+        fs.writeFileSync(
+          path.join(process.cwd(), 'settings.json'),
+          JSON.stringify({
+            openrouterApiKey: config.openrouter.apiKey,
+            openrouterModel: config.openrouter.model,
+          }, null, 2)
+        );
+      });
+    } catch (e) {
+      // ignore
+    }
+
     res.json({
       success: true,
       message: 'Settings updated successfully!',

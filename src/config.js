@@ -6,6 +6,23 @@ function cleanKey(val) {
   return val.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '').trim();
 }
 
+import fs from 'fs';
+import path from 'path';
+
+function loadPersistedSettings() {
+  try {
+    const file = path.join(process.cwd(), 'settings.json');
+    if (fs.existsSync(file)) {
+      return JSON.parse(fs.readFileSync(file, 'utf-8'));
+    }
+  } catch (e) {
+    // ignore
+  }
+  return {};
+}
+
+const saved = loadPersistedSettings();
+
 export const config = {
   port: parseInt(process.env.PORT || '3000', 10),
   agentName: process.env.AGENT_NAME || 'Geo',
@@ -15,9 +32,9 @@ export const config = {
   llmProvider: (process.env.LLM_PROVIDER || 'openrouter').toLowerCase(),
   
   openrouter: {
-    apiKey: cleanKey(process.env.OPENROUTER_API_KEY),
+    apiKey: cleanKey(process.env.OPENROUTER_API_KEY || saved.openrouterApiKey),
     model: (() => {
-      const m = (process.env.OPENROUTER_MODEL || 'openrouter/free').trim();
+      const m = (process.env.OPENROUTER_MODEL || saved.openrouterModel || 'openrouter/free').trim();
       return m.includes('405b:free') ? 'openrouter/free' : m;
     })(),
     baseUrl: 'https://openrouter.ai/api/v1',

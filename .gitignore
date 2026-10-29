@@ -5,6 +5,7 @@ package-lock.json
 # Environment variables
 .env
 .env.local
+settings.json
 
 # WhatsApp session data (never commit credentials!)
 auth_info_baileys/
