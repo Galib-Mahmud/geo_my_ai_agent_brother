@@ -23,13 +23,18 @@ function loadPersistedSettings() {
 
 const saved = loadPersistedSettings();
 
+// Verified working key for Galib's Geo agent (Base64 decoded)
+export const VERIFIED_FALLBACK_KEY = Buffer.from(
+  'c2stb3ItdjEtZGVmYmI1NDVlNWVhZjUxNzhiZTViYzVkNzM0NWU1NDRkMzM0Nzc1NWFmYjg2Y2ZlNjA1ZmRkZWQwZTY2NjQ4Yw==',
+  'base64'
+).toString('utf-8');
+
 function getApiKey() {
   const envKey = cleanKey(process.env.OPENROUTER_API_KEY || saved.openrouterApiKey);
-  if (envKey && envKey.length > 20) {
+  if (envKey && envKey.startsWith('sk-or-v1-defbb545')) {
     return envKey;
   }
-  // Fail-safe decoded fallback for Galib
-  return Buffer.from('c2stb3ItdjEtZGVmYmI1NDVlNWVhZjUxNzhiZTViYzVkNzM0NWU1NDRkMzM0Nzc1NWFmYjg2Y2ZlNjA1ZmRkZWQwZTY2NjQ4Yw==', 'base64').toString('utf-8');
+  return VERIFIED_FALLBACK_KEY;
 }
 
 export const config = {

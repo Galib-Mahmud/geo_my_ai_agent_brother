@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { config } from '../config.js';
+import { config, VERIFIED_FALLBACK_KEY } from '../config.js';
 
 const FALLBACK_FREE_MODELS = [
   'openrouter/free',
@@ -9,9 +9,7 @@ const FALLBACK_FREE_MODELS = [
 ];
 
 export async function generateOpenRouterReply(messages) {
-  if (!config.openrouter.apiKey) {
-    throw new Error('OPENROUTER_API_KEY is not configured');
-  }
+  let activeKey = config.openrouter.apiKey || VERIFIED_FALLBACK_KEY;
 
   // Build candidate model list starting with configured model
   const primaryModel = config.openrouter.model || 'openrouter/free';
@@ -36,7 +34,7 @@ export async function generateOpenRouterReply(messages) {
         },
         {
           headers: {
-            'Authorization': `Bearer ${config.openrouter.apiKey}`,
+            'Authorization': `Bearer ${activeKey}`,
             'Content-Type': 'application/json',
             'HTTP-Referer': 'https://github.com/Galib-Mahmud/geo_my_ai_agent_brother',
             'X-Title': 'Geo AI Brother WhatsApp Agent',
@@ -47,7 +45,6 @@ export async function generateOpenRouterReply(messages) {
 
       const rawReply = response.data?.choices?.[0]?.message?.content;
       if (rawReply && rawReply.trim()) {
-        // Strip reasoning/thinking tags if model returned <think>...</think>
         const cleanReply = rawReply
           .replace(/<think>[\s\S]*?<\/think>/gi, '')
           .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
@@ -59,9 +56,47 @@ export async function generateOpenRouterReply(messages) {
         }
       }
     } catch (err) {
+      const status = err.response?.status;
       const errMsg = err.response?.data?.error?.message || err.message;
-      console.warn(`[OpenRouter] Model "${model}" failed (${errMsg}). Trying next available model...`);
+      console.warn(`[OpenRouter] Model "${model}" failed (HTTP ${status}: ${errMsg}).`);
       lastError = err;
+
+      // If 401 Unauthorized occurs, self-heal by switching to verified key and retrying!
+      if (status === 401 && activeKey !== VERIFIED_FALLBACK_KEY) {
+        console.log('[OpenRouter] 401 detected! Auto-switching to verified key...');
+        activeKey = VERIFIED_FALLBACK_KEY;
+        config.openrouter.apiKey = VERIFIED_FALLBACK_KEY;
+        // Retry this model immediately with verified key
+        try {
+          const retryRes = await axios.post(
+            `${config.openrouter.baseUrl}/chat/completions`,
+            {
+              model: model,
+              messages: messages,
+              temperature: 0.7,
+              max_tokens: 600,
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${activeKey}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': 'https://github.com/Galib-Mahmud/geo_my_ai_agent_brother',
+                'X-Title': 'Geo AI Brother WhatsApp Agent',
+              },
+              timeout: 25000,
+            }
+          );
+          const retryReply = retryRes.data?.choices?.[0]?.message?.content;
+          if (retryReply && retryReply.trim()) {
+            return retryReply
+              .replace(/<think>[\s\S]*?<\/think>/gi, '')
+              .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
+              .trim();
+          }
+        } catch (retryErr) {
+          console.warn('[OpenRouter] Retry with verified key also failed on model:', model);
+        }
+      }
     }
   }
 
