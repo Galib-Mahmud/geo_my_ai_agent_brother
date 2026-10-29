@@ -2,7 +2,7 @@ import makeWASocket, { DisconnectReason, Browsers } from '@whiskeysockets/bailey
 import { Boom } from '@hapi/boom';
 import pino from 'pino';
 import QRCode from 'qrcode';
-import { getAuthState } from './authStore.js';
+import { getAuthState, clearAuthState } from './authStore.js';
 import { handleIncomingMessage, addActivityLog } from '../agent/handler.js';
 import { config } from '../config.js';
 
@@ -115,7 +115,12 @@ export async function initWhatsApp() {
           initWhatsApp().catch(console.error);
         }, 5000);
       } else {
-        console.log('🔒 Logged out of WhatsApp. Clear auth store and re-scan QR.');
+        console.log('🔒 Logged out of WhatsApp. Clearing auth and generating fresh QR...');
+        clearAuthState().then(() => {
+          setTimeout(() => {
+            initWhatsApp().catch(console.error);
+          }, 2000);
+        });
       }
     } else if (connection === 'open') {
       connectionStatus = 'connected';
@@ -154,4 +159,31 @@ export async function initWhatsApp() {
 
 export function getSocket() {
   return sock;
+}
+
+export async function logoutWhatsApp() {
+  console.log('🚪 Disconnecting and logging out WhatsApp...');
+  try {
+    if (sock) {
+      await sock.logout().catch(() => {});
+      sock.end();
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  await clearAuthState();
+
+  connectionStatus = 'disconnected';
+  userInfo = null;
+  startedAt = null;
+  currentQrDataUrl = null;
+  pairingCode = null;
+
+  // Immediately initialize fresh session to generate new QR Code
+  setTimeout(() => {
+    initWhatsApp().catch(console.error);
+  }, 1000);
+
+  return { success: true };
 }

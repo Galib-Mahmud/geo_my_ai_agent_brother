@@ -37,6 +37,10 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
           Reconnect
         </button>
+        <button class="btn btn-outline btn-sm" id="btnLogout" title="Disconnect & Reset WhatsApp" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Disconnect
+        </button>
       </div>
     </header>
 
@@ -111,6 +115,9 @@
               <h3>WhatsApp Connected & Active!</h3>
               <p>Geo is now running silently and auto-replying to your incoming chats like a real brother.</p>
               <div class="connected-badge" id="connectedNumber">+880 17XX-XXXXXX</div>
+              <button class="btn btn-outline btn-sm" id="btnDisconnectInCard" style="margin-top: 18px; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);">
+                Log Out & Link Another Phone
+              </button>
             </div>
 
             <div class="qr-instructions" id="qrInstructions">

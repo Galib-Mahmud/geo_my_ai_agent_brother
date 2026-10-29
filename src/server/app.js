@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from '../config.js';
-import { getClientStatus, requestWhatsAppPairingCode, initWhatsApp } from '../whatsapp/client.js';
+import { getClientStatus, requestWhatsAppPairingCode, initWhatsApp, logoutWhatsApp } from '../whatsapp/client.js';
 import { recentActivities, addActivityLog } from '../agent/handler.js';
 import { generateAIReply } from '../llm/index.js';
 import { getSystemPrompt } from '../agent/persona.js';
@@ -55,6 +55,16 @@ export function createServer() {
     try {
       await initWhatsApp();
       res.json({ success: true, message: 'Reconnecting WhatsApp...' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Disconnect / Logout WhatsApp session and generate new QR
+  app.post('/api/logout', async (req, res) => {
+    try {
+      await logoutWhatsApp();
+      res.json({ success: true, message: 'WhatsApp session disconnected. New QR code generating...' });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

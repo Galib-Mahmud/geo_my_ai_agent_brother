@@ -282,6 +282,48 @@ btnReconnect?.addEventListener('click', async () => {
   }
 });
 
+// Disconnect / Logout button
+const btnLogout = document.getElementById('btnLogout');
+const btnDisconnectInCard = document.getElementById('btnDisconnectInCard');
+
+async function handleLogout() {
+  if (!confirm('Are you sure you want to disconnect WhatsApp? You will need to scan QR code again.')) {
+    return;
+  }
+  if (btnLogout) {
+    btnLogout.disabled = true;
+    btnLogout.innerText = 'Disconnecting...';
+  }
+  if (btnDisconnectInCard) {
+    btnDisconnectInCard.disabled = true;
+    btnDisconnectInCard.innerText = 'Logging out...';
+  }
+
+  try {
+    const res = await fetch('/api/logout', { method: 'POST' });
+    const data = await res.json();
+    alert(data.message || 'Disconnected! Generating new QR code...');
+    updateStatus();
+  } catch (err) {
+    alert('Failed to disconnect: ' + err.message);
+  } finally {
+    if (btnLogout) {
+      btnLogout.disabled = false;
+      btnLogout.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Disconnect
+      `;
+    }
+    if (btnDisconnectInCard) {
+      btnDisconnectInCard.disabled = false;
+      btnDisconnectInCard.innerText = 'Log Out & Link Another Phone';
+    }
+  }
+}
+
+btnLogout?.addEventListener('click', handleLogout);
+btnDisconnectInCard?.addEventListener('click', handleLogout);
+
 btnClearLogs?.addEventListener('click', () => {
   logStream.innerHTML = '<div class="log-empty">Logs cleared.</div>';
 });

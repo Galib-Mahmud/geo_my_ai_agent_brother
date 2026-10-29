@@ -113,3 +113,28 @@ export async function getAuthState() {
     saveCreds: () => writeData('creds', creds),
   };
 }
+
+import fs from 'fs';
+import path from 'path';
+
+export async function clearAuthState() {
+  const model = await initMongo();
+  if (model) {
+    try {
+      await model.deleteMany({});
+      console.log('🧹 Cleared WhatsApp session from MongoDB Atlas');
+    } catch (e) {
+      console.error('Failed to clear Mongo auth:', e.message);
+    }
+  }
+
+  try {
+    const authDir = path.join(process.cwd(), 'auth_info_baileys');
+    if (fs.existsSync(authDir)) {
+      fs.rmSync(authDir, { recursive: true, force: true });
+      console.log('🧹 Cleared local auth_info_baileys folder');
+    }
+  } catch (e) {
+    console.error('Failed to remove auth directory:', e.message);
+  }
+}
