@@ -26,6 +26,7 @@ export function getClientStatus() {
     ownerName: config.ownerName,
     llmProvider: config.llmProvider,
     model: config[config.llmProvider]?.model || 'default',
+    hasApiKey: Boolean(config.openrouter?.apiKey && config.openrouter.apiKey.length > 20),
   };
 }
 
